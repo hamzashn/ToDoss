@@ -39,3 +39,37 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# --- ToDoss eklemeleri ---
+
+# Ortam değişkenleri (API anahtarları vb.); örnek dosya paylaşılabilir
+.env
+.env.*
+!.env.example
+
+# İmza ve kimlik bilgileri (EAS yerel imza, keystore, sertifikalar)
+credentials.json
+credentials/
+*.keystore
+
+# Derleme çıktıları
+*.apk
+*.aab
+*.ipa
+
+# Kişisel Claude Code ayarları (proje ayarı .claude/settings.json paylaşılır)
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/
+
+# Editör / IDE
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Loglar
+*.log
+TODOSS.md
