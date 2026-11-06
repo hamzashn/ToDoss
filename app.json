@@ -9,10 +9,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.todoss.app"
+      "bundleIdentifier": "com.hamzashn.todoss"
     },
     "android": {
-      "package": "com.todoss.app",
+      "package": "com.hamzashn.todoss",
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM"
       ],
