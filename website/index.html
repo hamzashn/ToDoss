@@ -87,6 +87,15 @@
     .nav-links a { text-decoration: none; }
     .nav-links a:hover { color: var(--primary); }
     @media (min-width: 820px) { .nav-links { display: flex; } }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .gh-link {
+      width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+      color: var(--text); background: var(--surface); border: 1px solid var(--border);
+      transition: color .15s, border-color .15s;
+    }
+    .gh-link:hover { color: var(--primary); border-color: var(--primary-light); }
+    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+    .footer-links a { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); }
 
     /* ---------- Buttons ---------- */
     .btn {
@@ -318,6 +327,7 @@
       <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
       <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+      <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></symbol>
       <symbol id="i-android" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.87 3.23A11.4 11.4 0 0 0 12 8.2c-1.77 0-3.43.37-4.91.95L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></symbol>
     </defs>
   </svg>
@@ -334,10 +344,15 @@
         <a href="#kurulum">Kurulum</a>
         <a href="#sss">SSS</a>
       </nav>
-      <a class="btn btn-primary btn-sm" href="#indir" data-apk>
-        <svg width="18" height="18"><use href="#i-download"/></svg>
-        İndir
-      </a>
+      <div class="nav-actions">
+        <a class="gh-link" href="https://github.com/HamzaShn" target="_blank" rel="noopener" aria-label="HamzaShn GitHub profili" title="GitHub">
+          <svg width="20" height="20"><use href="#i-github"/></svg>
+        </a>
+        <a class="btn btn-primary btn-sm" href="#indir" data-apk>
+          <svg width="18" height="18"><use href="#i-download"/></svg>
+          İndir
+        </a>
+      </div>
     </div>
   </header>
 
@@ -601,6 +616,12 @@
         <span class="mark" style="width:28px;height:28px;border-radius:8px"><svg width="16" height="16"><use href="#i-check"/></svg></span>
         ToDoss
       </a>
+      <div class="footer-links">
+        <a href="https://github.com/HamzaShn" target="_blank" rel="noopener">
+          <svg width="16" height="16"><use href="#i-github"/></svg> Geliştiren: HamzaShn
+        </a>
+        <a href="https://github.com/HamzaShn/ToDoss" target="_blank" rel="noopener">Kaynak kodu</a>
+      </div>
       <span>© <span id="year">2026</span> ToDoss · Tüm veriler cihazında kalır.</span>
     </div>
   </footer>
