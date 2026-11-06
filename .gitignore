@@ -57,7 +57,7 @@ credentials/
 *.aab
 *.ipa
 
-# Kişisel Claude Code ayarları (proje ayarı .claude/settings.json paylaşılır)
+# Claude Code ayarları ve yerel notlar (repoya gönderilmez)
 .claude/settings.local.json
 CLAUDE.local.md
 .claude/
@@ -72,4 +72,6 @@ desktop.ini
 
 # Loglar
 *.log
+
+# Proje planlama dokümanı (yerelde kalır)
 TODOSS.md
