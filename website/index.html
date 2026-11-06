@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ToDoss — Görevlerini planla, ilerlemeni gör</title>
+  <meta name="description" content="ToDoss: tamamen çevrimdışı çalışan, hesap gerektirmeyen yapılacaklar uygulaması. Görev planla, hatırlatıcı kur, ilerlemeni takip et. Android için ücretsiz indir." />
+  <meta name="theme-color" content="#1F6FD1" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ToDoss — Görevlerini planla, ilerlemeni gör" />
+  <meta property="og:description" content="Çevrimdışı, hesapsız, reklamsız yapılacaklar uygulaması. Android için ücretsiz." />
+  <meta property="og:image" content="assets/icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #1F6FD1;
+      --primary-dark: #1A5DB3;
+      --primary-light: #D6E8FB;
+      --primary-soft: #EAF3FD;
+      --bg: #F3F7FD;
+      --surface: #FFFFFF;
+      --text: #0F2747;
+      --text-2: #4A5A70;
+      --muted: #647288;
+      --border: #E3EAF3;
+      --track: #E8EEF6;
+      --accent: #E07A1F;
+      --accent-light: #FDEFE0;
+      --accent-text: #A4520C;
+      --success: #2BA36B;
+      --success-light: #E3F5EC;
+      --success-text: #1D7A4F;
+      --purple: #8E5BD8;
+      --radius: 20px;
+      --shadow: 0 1px 2px rgba(15,39,71,.04), 0 12px 32px -12px rgba(15,39,71,.16);
+      --max: 1120px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; }
+    h1, h2, h3 { line-height: 1.15; margin: 0; letter-spacing: -0.02em; }
+    p { margin: 0; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 640px) { .wrap { padding: 0 24px; } }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; border-radius: 8px; }
+
+    /* ---------- Nav ---------- */
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(243,247,253,.82);
+      backdrop-filter: saturate(160%) blur(14px);
+      -webkit-backdrop-filter: saturate(160%) blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .2s;
+    }
+    .nav.scrolled { border-bottom-color: var(--border); }
+    .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 20px; }
+    .mark {
+      width: 34px; height: 34px; border-radius: 10px; background: var(--primary);
+      display: grid; place-items: center; color: #fff; flex: none;
+    }
+    .nav-links { display: none; gap: 28px; font-weight: 600; font-size: 15px; color: var(--text-2); }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--primary); }
+    @media (min-width: 820px) { .nav-links { display: flex; } }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      font: inherit; font-weight: 700; text-decoration: none; border: 0; cursor: pointer;
+      border-radius: 14px; padding: 14px 22px; font-size: 16px;
+      transition: transform .15s, box-shadow .15s, background .15s;
+      min-height: 48px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 10px 24px -10px rgba(31,111,209,.7); }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--primary-light); color: var(--primary); }
+    .btn-sm { padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 12px; }
+    .btn-lg { padding: 18px 28px; font-size: 18px; border-radius: 16px; }
+
+    /* ---------- Hero ---------- */
+    .hero { position: relative; padding: 48px 0 72px; }
+    .hero::before {
+      content: ""; position: absolute; inset: -120px 0 auto 0; height: 640px; z-index: -1;
+      background:
+        radial-gradient(600px 320px at 85% 30%, rgba(31,111,209,.16), transparent 70%),
+        radial-gradient(420px 260px at 10% 10%, rgba(224,122,31,.10), transparent 70%);
+    }
+    .hero-grid { display: grid; gap: 48px; align-items: center; }
+    @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.05fr .95fr; gap: 32px; } .hero { padding: 72px 0 96px; } }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 6px 14px 6px 8px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--text-2);
+    }
+    .pill b { background: var(--success-light); color: var(--success-text); padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+    .hero h1 { font-size: clamp(36px, 7vw, 60px); font-weight: 800; margin: 20px 0 18px; }
+    .hero h1 em { font-style: normal; color: var(--primary); position: relative; white-space: nowrap; }
+    .hero h1 em svg { position: absolute; left: 0; right: 0; bottom: -8px; width: 100%; height: 12px; }
+    .lead { font-size: clamp(17px, 2.2vw, 19px); color: var(--text-2); max-width: 520px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .cta-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 14px; color: var(--muted); font-weight: 500; }
+    .cta-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .cta-meta svg { color: var(--success); }
+
+    /* ---------- Phone mockups ---------- */
+    .phones { position: relative; display: flex; justify-content: center; min-height: 560px; }
+    .phone {
+      width: 272px; height: 560px; border-radius: 42px; padding: 10px;
+      background: #0F2747; box-shadow: 0 40px 80px -30px rgba(15,39,71,.45), inset 0 0 0 2px #24406a;
+      position: relative; flex: none;
+    }
+    .phone .screen {
+      width: 100%; height: 100%; border-radius: 33px; overflow: hidden; background: var(--bg);
+      padding: 34px 16px 16px; position: relative; font-size: 12px;
+    }
+    .phone .screen::before {
+      content: ""; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 72px; height: 18px; border-radius: 12px; background: #0F2747;
+    }
+    .phone.back { position: absolute; transform: translate(118px, 36px) rotate(6deg) scale(.9); opacity: .97; z-index: 0; display: none; }
+    .phone.front { z-index: 1; animation: float 6s ease-in-out infinite; }
+    @media (min-width: 560px) { .phone.back { display: block; } .phone.front { transform: translateX(-70px); animation-name: float-shift; } }
+    @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+    @keyframes float-shift { 0%,100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+
+    .m-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .m-head small { color: var(--muted); font-weight: 500; font-size: 11px; display: block; }
+    .m-head strong { font-size: 16px; font-weight: 800; }
+    .m-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: grid; place-items: center; font-weight: 800; }
+    .m-card { background: var(--primary); color: #fff; border-radius: 18px; padding: 14px; display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+    .m-card p { font-size: 11px; opacity: .85; }
+    .m-card strong { font-size: 14px; display: block; margin-bottom: 2px; }
+    .m-chips { display: flex; gap: 6px; margin-bottom: 12px; overflow: hidden; }
+    .m-chip { padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-weight: 600; font-size: 10.5px; white-space: nowrap; color: var(--text-2); }
+    .m-chip.on { background: var(--text); color: #fff; border-color: var(--text); }
+    .m-task { background: var(--surface); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
+    .m-check { width: 18px; height: 18px; border-radius: 6px; border: 2px solid #C5D2E3; flex: none; display: grid; place-items: center; }
+    .m-check.done { background: var(--success); border-color: var(--success); color: #fff; }
+    .m-task .t { flex: 1; min-width: 0; }
+    .m-task .t b { display: block; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .m-task .t.done b { text-decoration: line-through; color: var(--muted); }
+    .m-task .t span { font-size: 10.5px; color: var(--muted); }
+    .m-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .m-fab { position: absolute; right: 16px; bottom: 60px; width: 44px; height: 44px; border-radius: 14px; background: var(--primary); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 20px -8px rgba(31,111,209,.8); }
+    .m-tabbar { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 42px; border-radius: 16px; background: var(--surface); display: flex; justify-content: space-around; align-items: center; color: #9AA8BC; border: 1px solid var(--border); }
+    .m-tabbar .on { color: var(--primary); }
+
+    .m-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+    .m-seg { display: flex; background: var(--track); border-radius: 10px; padding: 3px; margin-bottom: 12px; font-weight: 700; font-size: 11px; }
+    .m-seg span { flex: 1; text-align: center; padding: 5px; border-radius: 8px; color: var(--muted); }
+    .m-seg span.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+    .m-streak { background: var(--accent-light); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .m-streak .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: #fff; display: grid; place-items: center; }
+    .m-streak b { font-size: 15px; display: block; }
+    .m-streak span { color: var(--accent-text); font-size: 10.5px; font-weight: 600; }
+    .m-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .m-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 10px; }
+    .m-stat b { font-size: 18px; display: block; }
+    .m-stat span { color: var(--muted); font-size: 10px; }
+    .m-stat i { font-style: normal; color: var(--success-text); font-weight: 700; font-size: 10px; }
+    .m-chart { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 10px 8px; }
+    .m-bars { display: flex; align-items: flex-end; gap: 8px; height: 96px; }
+    .m-bars div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .m-bars i { display: block; width: 100%; border-radius: 6px 6px 3px 3px; background: var(--primary-light); }
+    .m-bars i.hi { background: var(--primary); }
+    .m-bars span { font-size: 9px; color: var(--muted); font-weight: 600; }
+
+    /* ---------- Sections ---------- */
+    section { padding: 72px 0; }
+    @media (min-width: 900px) { section { padding: 96px 0; } }
+    .eyebrow { color: var(--primary); font-weight: 700; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+    .sec-head { max-width: 640px; margin-bottom: 44px; }
+    .sec-head h2 { font-size: clamp(28px, 4.4vw, 40px); font-weight: 800; margin: 10px 0 14px; }
+    .sec-head p { color: var(--text-2); font-size: 17px; }
+    .center { text-align: center; margin-left: auto; margin-right: auto; }
+
+    .features { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .features { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 980px) { .features { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+    .feature {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 26px; transition: transform .2s, box-shadow .2s;
+    }
+    .feature:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .feature .ic { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 18px; }
+    .feature h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+    .feature p { color: var(--text-2); font-size: 15.5px; }
+    .ic.blue { background: var(--primary-soft); color: var(--primary); }
+    .ic.orange { background: var(--accent-light); color: var(--accent-text); }
+    .ic.green { background: var(--success-light); color: var(--success-text); }
+    .ic.purple { background: #F1EAFB; color: #6B3FB5; }
+
+    /* Privacy band */
+    .privacy {
+      background: var(--text); color: #fff; border-radius: 28px; padding: 40px 24px;
+      display: grid; gap: 32px; position: relative; overflow: hidden;
+    }
+    .privacy::after {
+      content: ""; position: absolute; right: -120px; top: -120px; width: 360px; height: 360px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(31,111,209,.55), transparent 70%);
+    }
+    @media (min-width: 900px) { .privacy { grid-template-columns: 1fr 1fr; padding: 56px; align-items: center; } }
+    .privacy h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; margin-bottom: 14px; }
+    .privacy p { color: #C3D0E2; font-size: 17px; }
+    .privacy ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; position: relative; z-index: 1; }
+    .privacy li {
+      display: flex; gap: 14px; align-items: center; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10); border-radius: 16px; padding: 16px 18px; font-weight: 600;
+    }
+    .privacy li svg { color: #7DB3EE; flex: none; }
+
+    /* Steps */
+    .steps { display: grid; gap: 16px; counter-reset: s; }
+    @media (min-width: 820px) { .steps { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+    .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; position: relative; }
+    .step::before {
+      counter-increment: s; content: counter(s);
+      width: 40px; height: 40px; border-radius: 12px; background: var(--primary); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: 18px; margin-bottom: 18px;
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .step p { color: var(--text-2); font-size: 15.5px; }
+    .note {
+      margin-top: 20px; display: flex; gap: 12px; align-items: flex-start;
+      background: var(--accent-light); color: #6B370A; border-radius: 16px; padding: 16px 18px; font-size: 15px;
+    }
+    .note svg { flex: none; margin-top: 2px; color: var(--accent-text); }
+
+    /* Download */
+    .download {
+      background: linear-gradient(135deg, var(--primary) 0%, #2C7FE0 60%, #4C9BE8 100%);
+      color: #fff; border-radius: 28px; padding: 48px 24px; text-align: center; position: relative; overflow: hidden;
+    }
+    .download::before, .download::after {
+      content: ""; position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.15);
+    }
+    .download::before { width: 420px; height: 420px; left: -160px; bottom: -220px; }
+    .download::after { width: 300px; height: 300px; right: -100px; top: -140px; }
+    .download > * { position: relative; z-index: 1; }
+    .download img { width: 88px; height: 88px; border-radius: 22px; margin: 0 auto 22px; box-shadow: 0 16px 32px -12px rgba(0,0,0,.4); }
+    .download h2 { font-size: clamp(28px, 4.6vw, 42px); font-weight: 800; margin-bottom: 12px; }
+    .download p { color: #E2EEFC; font-size: 17px; max-width: 520px; margin: 0 auto; }
+    .download .btn-primary { background: #fff; color: var(--primary); box-shadow: 0 16px 32px -14px rgba(0,0,0,.45); margin-top: 30px; }
+    .download .btn-primary:hover { background: #F3F7FD; }
+    .download small { display: block; margin-top: 16px; color: #D6E8FB; font-size: 14px; }
+
+    /* FAQ */
+    .faq { max-width: 760px; margin: 0 auto; display: grid; gap: 12px; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 0 20px; }
+    details[open] { box-shadow: var(--shadow); }
+    summary {
+      cursor: pointer; list-style: none; font-weight: 700; font-size: 16.5px; padding: 18px 0;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+"; flex: none; width: 28px; height: 28px; border-radius: 8px; background: var(--primary-soft); color: var(--primary);
+      display: grid; place-items: center; font-size: 20px; font-weight: 600; transition: transform .2s;
+    }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { padding: 0 0 18px; color: var(--text-2); font-size: 15.5px; }
+
+    footer { padding: 40px 0 48px; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 28px; }
+    footer a { text-decoration: none; font-weight: 600; }
+    footer a:hover { color: var(--primary); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .no-js .reveal { opacity: 1; transform: none; }
+  </style>
+</head>
+<body class="no-js">
+  <!-- İkonlar (Feather tabanlı) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+      <symbol id="i-bar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+      <symbol id="i-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
+      <symbol id="i-wifi-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></symbol>
+      <symbol id="i-user-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+      <symbol id="i-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+      <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+      <symbol id="i-android" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.87 3.23A11.4 11.4 0 0 0 12 8.2c-1.77 0-3.43.37-4.91.95L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="nav" id="nav">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="ToDoss ana sayfa">
+        <span class="mark"><svg width="20" height="20"><use href="#i-check"/></svg></span>
+        ToDoss
+      </a>
+      <nav class="nav-links" aria-label="Sayfa bölümleri">
+        <a href="#ozellikler">Özellikler</a>
+        <a href="#gizlilik">Gizlilik</a>
+        <a href="#kurulum">Kurulum</a>
+        <a href="#sss">SSS</a>
+      </nav>
+      <a class="btn btn-primary btn-sm" href="#indir" data-apk>
+        <svg width="18" height="18"><use href="#i-download"/></svg>
+        İndir
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="pill"><b>Ücretsiz</b> Android için şimdi indir</span>
+          <h1>
+            Görevlerini planla,<br />
+            <em>ilerlemeni gör.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9 C 50 2, 150 2, 198 8" stroke="#E07A1F" stroke-width="4" fill="none" stroke-linecap="round"/></svg></em>
+          </h1>
+          <p class="lead">
+            ToDoss; günlük işlerini tarih, saat, kategori ve öncelikle düzenlemeni, zamanında hatırlatılmanı ve
+            her gün biraz daha ilerlediğini görmeni sağlayan sade bir yapılacaklar uygulaması.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary btn-lg" href="#" data-apk download>
+              <svg width="22" height="22"><use href="#i-android"/></svg>
+              APK'yı İndir
+            </a>
+            <a class="btn btn-ghost btn-lg" href="#ozellikler">Özellikleri gör</a>
+          </div>
+          <div class="cta-meta">
+            <span><svg width="16" height="16"><use href="#i-check"/></svg> Hesap gerekmez</span>
+            <span><svg width="16" height="16"><use href="#i-check"/></svg> İnternetsiz çalışır</span>
+            <span><svg width="16" height="16"><use href="#i-check"/></svg> Reklam yok</span>
+          </div>
+        </div>
+
+        <div class="phones" aria-hidden="true">
+          <!-- Arka telefon: İlerleme ekranı -->
+          <div class="phone back">
+            <div class="screen">
+              <div class="m-title">İlerleme</div>
+              <div class="m-seg"><span class="on">Haftalık</span><span>Aylık</span></div>
+              <div class="m-streak">
+                <div class="ic"><svg width="18" height="18"><use href="#i-zap"/></svg></div>
+                <div><b>7 gün</b><span>Seriyi bozma, harika gidiyorsun!</span></div>
+              </div>
+              <div class="m-stats">
+                <div class="m-stat"><b>24</b><span>Tamamlanan</span> <i>+6</i></div>
+                <div class="m-stat"><b>%86</b><span>Oran</span> <i>+12%</i></div>
+              </div>
+              <div class="m-chart">
+                <div class="m-bars">
+                  <div><i style="height:40%"></i><span>Pt</span></div>
+                  <div><i style="height:65%"></i><span>Sa</span></div>
+                  <div><i style="height:50%"></i><span>Ça</span></div>
+                  <div><i class="hi" style="height:90%"></i><span>Pe</span></div>
+                  <div><i style="height:70%"></i><span>Cu</span></div>
+                  <div><i style="height:30%"></i><span>Ct</span></div>
+                  <div><i style="height:20%"></i><span>Pz</span></div>
+                </div>
+              </div>
+              <div class="m-tabbar">
+                <svg width="18" height="18"><use href="#i-home"/></svg>
+                <svg width="18" height="18"><use href="#i-calendar"/></svg>
+                <svg width="18" height="18" class="on"><use href="#i-bar"/></svg>
+                <svg width="18" height="18"><use href="#i-user"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ön telefon: Ana sayfa -->
+          <div class="phone front">
+            <div class="screen">
+              <div class="m-head">
+                <div><small>Günaydın,</small><strong>Elif 👋</strong></div>
+                <div class="m-avatar">E</div>
+              </div>
+              <div class="m-card">
+                <svg width="54" height="54" viewBox="0 0 54 54">
+                  <circle cx="27" cy="27" r="22" stroke="rgba(255,255,255,.25)" stroke-width="6" fill="none"/>
+                  <circle cx="27" cy="27" r="22" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"
+                          stroke-dasharray="138.2" stroke-dashoffset="55.3" transform="rotate(-90 27 27)"/>
+                  <text x="27" y="31" text-anchor="middle" fill="#fff" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif">3/5</text>
+                </svg>
+                <div><strong>Bugünkü ilerleme</strong><p>Harika gidiyorsun, 2 görev kaldı!</p></div>
+              </div>
+              <div class="m-chips">
+                <span class="m-chip on">Tümü</span><span class="m-chip">İş</span><span class="m-chip">Kişisel</span><span class="m-chip">Spor</span>
+              </div>
+              <div class="m-task">
+                <span class="m-check done"><svg width="11" height="11"><use href="#i-check"/></svg></span>
+                <div class="t done"><b>Sabah koşusu</b><span>07:00 – 07:45</span></div>
+                <span class="m-dot" style="background:var(--success)"></span>
+              </div>
+              <div class="m-task">
+                <span class="m-check done"><svg width="11" height="11"><use href="#i-check"/></svg></span>
+                <div class="t done"><b>E-postaları yanıtla</b><span>09:00 – 09:30</span></div>
+                <span class="m-dot" style="background:var(--primary)"></span>
+              </div>
+              <div class="m-task">
+                <span class="m-check done"><svg width="11" height="11"><use href="#i-check"/></svg></span>
+                <div class="t done"><b>Proje sunumu</b><span>11:00 – 12:00</span></div>
+                <span class="m-dot" style="background:var(--accent)"></span>
+              </div>
+              <div class="m-task">
+                <span class="m-check"></span>
+                <div class="t"><b>Market alışverişi</b><span>18:30 · 🔔 15 dk önce</span></div>
+                <span class="m-dot" style="background:var(--purple)"></span>
+              </div>
+              <div class="m-fab"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+              <div class="m-tabbar">
+                <svg width="18" height="18" class="on"><use href="#i-home"/></svg>
+                <svg width="18" height="18"><use href="#i-calendar"/></svg>
+                <svg width="18" height="18"><use href="#i-bar"/></svg>
+                <svg width="18" height="18"><use href="#i-user"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÖZELLİKLER -->
+    <section id="ozellikler">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Özellikler</span>
+          <h2>Günün tamamı tek ekranda</h2>
+          <p>Gereksiz karmaşa yok. Planla, hatırlatıcını kur, tamamla ve ilerlemeni izle.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="ic blue"><svg width="24" height="24"><use href="#i-check"/></svg></div>
+            <h3>Hızlı görev yönetimi</h3>
+            <p>Başlık, not, tarih, başlangıç-bitiş saati ve öncelikle görev ekle. Tek dokunuşla tamamla.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="ic orange"><svg width="24" height="24"><use href="#i-bell"/></svg></div>
+            <h3>Akıllı hatırlatıcılar</h3>
+            <p>Görevden 5 dakika ile 1 gün önce bildirim al. Bildirime dokununca görev doğrudan açılır.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="ic green"><svg width="24" height="24"><use href="#i-calendar"/></svg></div>
+            <h3>Takvim ve zaman çizelgesi</h3>
+            <p>Hafta şeridinde gün seç, görevlerini saate göre sıralı bir zaman çizelgesinde gör.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="ic purple"><svg width="24" height="24"><use href="#i-bar"/></svg></div>
+            <h3>İlerleme istatistikleri</h3>
+            <p>Haftalık ve aylık grafikler, tamamlama oranı ve önceki döneme göre değişim.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="ic orange"><svg width="24" height="24"><use href="#i-zap"/></svg></div>
+            <h3>Gün serisi</h3>
+            <p>Art arda kaç gün görev tamamladığını gör, motivasyonunu yüksek tut.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="ic blue"><svg width="24" height="24"><use href="#i-tag"/></svg></div>
+            <h3>Renkli kategoriler</h3>
+            <p>Kendi kategorilerini oluştur, renk seç ve görevlerini kategoriye göre filtrele.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- GİZLİLİK -->
+    <section id="gizlilik" style="padding-top:0">
+      <div class="wrap">
+        <div class="privacy reveal">
+          <div>
+            <span class="eyebrow" style="color:#7DB3EE">Gizlilik</span>
+            <h2 style="margin-top:10px">Verilerin yalnızca senin telefonunda</h2>
+            <p>ToDoss hiçbir sunucuya bağlanmaz. Görevlerin cihazındaki yerel veritabanında saklanır. Kimse göremez, hiçbir yere gönderilmez.</p>
+          </div>
+          <ul>
+            <li><svg width="22" height="22"><use href="#i-user-x"/></svg> Hesap ya da giriş gerekmez</li>
+            <li><svg width="22" height="22"><use href="#i-wifi-off"/></svg> İnternet olmadan tam çalışır</li>
+            <li><svg width="22" height="22"><use href="#i-lock"/></svg> Veri toplama ve takip yok</li>
+            <li><svg width="22" height="22"><use href="#i-slash"/></svg> Reklam yok</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- KURULUM -->
+    <section id="kurulum" style="padding-top:0">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Kurulum</span>
+          <h2>3 adımda telefonunda</h2>
+          <p>ToDoss şimdilik Google Play dışında, doğrudan APK dosyası olarak dağıtılıyor.</p>
+        </div>
+        <div class="steps">
+          <div class="step reveal">
+            <h3>APK'yı indir</h3>
+            <p>Android telefonundan bu sayfayı açıp “APK'yı İndir” düğmesine dokun.</p>
+          </div>
+          <div class="step reveal">
+            <h3>Kuruluma izin ver</h3>
+            <p>İndirilen dosyayı aç. Android sorarsa tarayıcına <b>“Bilinmeyen uygulamaları yükle”</b> izni ver.</p>
+          </div>
+          <div class="step reveal">
+            <h3>Kur ve başla</h3>
+            <p>“Yükle”ye dokun, uygulamayı aç, adını gir ve ilk görevini ekle.</p>
+          </div>
+        </div>
+        <div class="note reveal">
+          <svg width="20" height="20"><use href="#i-alert"/></svg>
+          <span>Google Play Protect “tanınmayan uygulama” uyarısı gösterebilir. Bu, uygulama Play Store'dan gelmediği için normaldir. “Yine de yükle” seçeneğiyle devam edebilirsin.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- İNDİR -->
+    <section id="indir" style="padding-top:0">
+      <div class="wrap">
+        <div class="download reveal">
+          <img src="assets/icon.png" alt="ToDoss uygulama ikonu" width="88" height="88" />
+          <h2>Bugün planlamaya başla</h2>
+          <p>Ücretsiz, hesapsız ve reklamsız. Android telefon ve tabletlerde çalışır.</p>
+          <a class="btn btn-primary btn-lg" href="#" data-apk download>
+            <svg width="22" height="22"><use href="#i-android"/></svg>
+            Android için İndir (APK)
+          </a>
+          <small>Sürüm <span data-version>1.0.0</span> · Yalnızca Android</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- SSS -->
+    <section id="sss" style="padding-top:0">
+      <div class="wrap">
+        <div class="sec-head center reveal">
+          <span class="eyebrow">SSS</span>
+          <h2>Sık sorulan sorular</h2>
+        </div>
+        <div class="faq">
+          <details class="reveal">
+            <summary>ToDoss ücretli mi?</summary>
+            <p>Hayır. ToDoss tamamen ücretsizdir. Uygulama içi satın alma ya da reklam yoktur.</p>
+          </details>
+          <details class="reveal">
+            <summary>iPhone'da kullanabilir miyim?</summary>
+            <p>Şimdilik yalnızca Android sürümü dağıtılıyor. iOS sürümü ileride gelebilir.</p>
+          </details>
+          <details class="reveal">
+            <summary>APK dosyası güvenli mi?</summary>
+            <p>Evet. Uygulama internet bağlantısı kullanmaz, veri toplamaz ve yalnızca bildirim ile alarm (hatırlatıcılar için) izinlerini ister. Dosyayı her zaman yalnızca bu sayfadan indir.</p>
+          </details>
+          <details class="reveal">
+            <summary>Telefonumu değiştirirsem görevlerim taşınır mı?</summary>
+            <p>Veriler yalnızca cihazında tutulduğu için şu an başka bir telefona otomatik aktarım yoktur. Uygulamayı silmek de verileri siler.</p>
+          </details>
+          <details class="reveal">
+            <summary>Yeni sürümü nasıl yüklerim?</summary>
+            <p>Bu sayfadan güncel APK'yı indirip kurman yeterli. Uygulama güncellenir ve görevlerin korunur.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a class="brand" href="#top" style="font-size:17px">
+        <span class="mark" style="width:28px;height:28px;border-radius:8px"><svg width="16" height="16"><use href="#i-check"/></svg></span>
+        ToDoss
+      </a>
+      <span>© <span id="year">2026</span> ToDoss · Tüm veriler cihazında kalır.</span>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Yapılandırma =====
+    // APK'nın indirileceği adres. GitHub Releases'teki "latest" bağlantısı her zaman en yeni sürümü verir:
+    // yeni sürüm yayınlayınca bu satırı değiştirmen gerekmez (dosya adı aynı kaldığı sürece).
+    var APK_URL = 'https://github.com/HamzaShn/ToDoss/releases/latest/download/ToDoss.apk';
+    var VERSION = '1.0.0';
+    // ========================
+
+    document.body.classList.remove('no-js');
+
+    document.querySelectorAll('[data-apk]').forEach(function (a) { a.href = APK_URL; });
+    document.querySelectorAll('[data-version]').forEach(function (el) { el.textContent = VERSION; });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    var nav = document.getElementById('nav');
+    var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { rootMargin: '0px 0px -40px 0px', threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    }
+  </script>
+</body>
+</html>

@@ -13,7 +13,9 @@
     },
     "android": {
       "package": "com.todoss.app",
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#1F6FD1",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -49,6 +51,16 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "06f1c534-dd91-49f7-b25f-c47b3ec86f92"
+      }
     }
   }
 }
